@@ -202,7 +202,7 @@ dimensions = function(dataframe = steam_games) {
 ```
 
 ``` r
-# Creates a data frame with three dimensions extracted using dplyr, it is saving the output into a new dataframe and adding a column
+# Creates a data frame with three dimensions extracted using dplyr, it is saving the output into a new data frame and adding a column
 # that stores the data frame's name, in this case that is 'cancer_sample'
 
 cancer_sample_dimensions = dimensions(cancer_sample)
@@ -211,7 +211,7 @@ cancer_sample_dimensions['df_name'] = 'cancer_sample'
 ```
 
 ``` r
-# Creates a data frame with three dimensions extracted using dplyr, it is saving the output into a new dataframe and adding a column
+# Creates a data frame with three dimensions extracted using dplyr, it is saving the output into a new data frame and adding a column
 # that stores the data frame's name, in this case that is 'building_permits'
 
 building_permits_dimensions = dimensions(building_permits)
@@ -220,7 +220,7 @@ building_permits_dimensions['df_name'] = 'building_permits'
 ```
 
 ``` r
-# Creates a data frame with three dimensions extracted using dplyr, it is saving the output into a new dataframe and adding a column
+# Creates a data frame with three dimensions extracted using dplyr, it is saving the output into a new data frame and adding a column
 # that stores the data frame's name, in this case that is 'apt_buildings'
 
 apt_buildings_dimensions = dimensions(apt_buildings)
@@ -229,7 +229,7 @@ apt_buildings_dimensions['df_name'] = 'apt_buildings'
 ```
 
 ``` r
-# Creates a data frame with three dimensions extracted using dplyr, it is saving the output into a new dataframe and adding a column
+# Creates a data frame with three dimensions extracted using dplyr, it is saving the output into a new data frame and adding a column
 # that stores the data frame's name, in this case that is 'vancouver_trees'
 
 vancouver_trees_dimensions = dimensions(vancouver_trees)
@@ -238,7 +238,7 @@ vancouver_trees_dimensions['df_name'] = 'vancouver_trees'
 ```
 
 ``` r
-# Here I am creating an empty data frame to store values from all four dataframes and be able to see them together in the same df
+# Here I am creating an empty data frame to store values from all four data frames and be able to see them together in the same df
 
 df_dimensions_e = data.frame(
   Number_Rows = c(),
@@ -251,7 +251,7 @@ df_dimensions_e = data.frame(
 ``` r
 # This code appends the values for each data frame and 
 
-# The _e, _c, _d, _a notation is used so that if this code is rerun R doesn't continually append rows to a dataframe already built
+# The _e, _c, _d, _a notation is used so that if this code is rerun R doesn't continually append rows to a data frame already built
 
 
 df_dimensions_c = rbind(df_dimensions_e, cancer_sample_dimensions)
@@ -298,11 +298,11 @@ to choose this one? Briefly explain your choice below.
 
 <!-------------------------- Start your work below ---------------------------->
 
-``` r
-# For me the cancer_sample feels like the most relevant to my previous work (being a student in the School of Populationa and Public Health).
-# Additionally, when I looked at the names of the variables in the data frame. I noticed there is a "diagnosis" variable, which could be used
-# as an interesting outcome for the analysis in this assignment.
-```
+> For me the cancer_sample feels like the most relevant to my previous
+> work (being a student in the School of Population and Public Health).
+> Additionally, when I looked at the names of the variables in the data
+> frame. I noticed there is a “diagnosis” variable, which could be used
+> as an interesting outcome for the analysis in this assignment.
 
 <!----------------------------------------------------------------------------->
 
@@ -317,7 +317,8 @@ dataset. Note it down below.
 
 > In this case, I would be interested in knowing: are values for
 > area_mean consistent across diagnositc groups? It is possible that the
-> average area values varies between those that have a malignant tumor.
+> average area values vary between those that have a malignant tumor or
+> not.
 
 <!----------------------------------------------------------------------------->
 
@@ -385,12 +386,12 @@ sufficient comments for a reader to understand your reasoning and code.
 
 <!-------------------------- Start your work below ---------------------------->
 
-> 2.2.1 Plot the Distribution of a numeric variable
+> 2.1.1 Plot the Distribution of a numeric variable
 >
-> Solution: Create a faceted plot in ggplot2 to visualize the
+> *Solution*: Create a faceted plot in ggplot2 to visualize the
 > distribution of a continuous variable.
 >
-> Justification: In this case, I am interested in seeing if the
+> *Justification*: In this case, I am interested in seeing if the
 > distribution for the variable “area_mean” is consistent across
 > “diagnosed” categories.
 
@@ -406,14 +407,14 @@ area_mean_plot = ggplot(cancer_sample, aes(x=area_mean))+
 area_mean_plot
 ```
 
-![](Mini-Projec-1_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](Mini-Projec-1_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
-> 2.2.2 Create a new variable
+> 2.1.2 Create a new variable
 >
-> Solution: Take the log of area_mean and store results in a new
+> *Solution*: Take the log of area_mean and store results in a new
 > variable using mutate.
 >
-> Justification: I previously noticed that the distribution for this
+> *Justification*: I previously noticed that the distribution for this
 > variable is highly skewed. I want to create a new dummy variable that
 > splits values for the skewed variable into (0) below the mean or (1)
 > Above the mean. Binarizing this variable may be useful in future
@@ -439,14 +440,14 @@ ggplot(cancer_sample_new_var, aes(x=log_area_mean))+
              color="green", linetype="dotdash")
 ```
 
-![](Mini-Projec-1_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](Mini-Projec-1_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
-> 2.2.3 Explore the relationship between 2 variables in a plot.
+> 2.1.3 Explore the relationship between 2 variables in a plot.
 >
-> Solution: create a scatterplot of log_area_mean(transformed variable
+> *Solution*: create a scatterplot of log_area_mean(transformed variable
 > created in 2.2.2) and area_worst
 >
-> Justification: from the name, it seems like both variables may be
+> *Justification*: from the name, it seems like both variables may be
 > related conceptually. Plotting them together will help me see if they
 > are colinear in any way.
 
@@ -461,15 +462,15 @@ texture_smooth_scatter = ggplot(cancer_sample_new_var, aes(x=area_mean, y=area_w
 texture_smooth_scatter
 ```
 
-![](Mini-Projec-1_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](Mini-Projec-1_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
-> 2.2.4: Use a boxplot to look at the frequency of different
+> 2.1.4: Use a boxplot to look at the frequency of different
 > observations within a single variable.
 >
-> Solution: create a boxplot in ggplot for the variance of
+> *Solution*: create a boxplot in ggplot for the variance of
 > log_area_mean.
 >
-> Justification: I am interested in visualizing the frequency of
+> *Justification*: I am interested in visualizing the frequency of
 > observations or whether there are any clear outliers in the
 > log_area_mean column I created in 2.2.2. From the graph in 2.2.3 there
 > seemed to be some heteroschedasticity after the ~1,500 value. I am
@@ -487,7 +488,7 @@ area_mean_across_diagnosis = ggplot(cancer_sample_new_var, aes(x=diagnosis, y = 
 area_mean_across_diagnosis
 ```
 
-![](Mini-Projec-1_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![](Mini-Projec-1_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 <!----------------------------------------------------------------------------->
 
@@ -501,17 +502,18 @@ Write the 4 questions and any additional comments below.
 
 <!--- *****START HERE***** --->
 
-> In the past, I have worked with health-related data but not with
-> cancer-specific datasets. I am excited to embark on a new project and
-> learn more along the way. I wish, however, that I could have either
-> (1) more information about the variables I have and how they were
-> collected, or (2) to have more information of different types (e.g.,
-> when where the tests done, what age was the patient, what was their
-> background, have they had any form of cancer before either themselves
-> or their direct relatives). Still, given the data I have access to
-> now, here are four questions I would like to explore further:
+> *Comment*: In the past, I have worked with health-related data but not
+> with cancer-specific datasets. I am excited to embark on a new project
+> and learn more along the way. I wish, however, that I could have
+> either (1) more information about the variables I have and how they
+> were collected, or (2) to have more information of different types
+> (e.g., when where the tests done, what age was the patient, what was
+> their background, have they had any form of cancer before either
+> themselves or their direct relatives). Still, given the data I have
+> access to now, here are four questions I would like to explore
+> further:
 >
-> 3.1: There seem to be three forms of each “characteristic”. For
+> *3.1*: There seem to be three forms of each “characteristic”. For
 > example, there is a radius_mean, radius_se, and radius_worst. I am
 > wondering if each form may have a different relationship to the
 > “diagnosis” of each observation. For example, do higher values for
@@ -519,22 +521,22 @@ Write the 4 questions and any additional comments below.
 > malignant tumor? Or do they have unique relationships with diagnoistic
 > results?S
 >
-> 3.2: I am also interested in understanding the relationship between
+> *3.2*: I am also interested in understanding the relationship between
 > sets of variables that seem to be related conceptually. It could be
 > that smoothness and texture refer to similar concepts. So, I would
 > like to know: is there any correlation between smoothness_mean and
 > texture_mean across observations?
 >
-> 3.3: I am curious about the difference between \_mean and \_worst
+> *3.3*: I am curious about the difference between \_mean and \_worst
 > variables (e.g., radius_mean vs radius_worst). I am curious if having
 > a wider range between the \_mean and the \_worst values is also
 > predictive of wether an observation has a malignant tumor.
 >
-> 3.4: Ultimately, I am curious to see which factors are most predictive
-> of a cancer diagnosis. I have seen that Random Forest can be used to
-> estimate variable importance in prediction problems. I would like to
-> know, which variables are the most predictive of a cancer diagnosis
-> from the ones in the original dataset?
+> *3.4*: Ultimately, I am curious to see which factors are most
+> predictive of a cancer diagnosis. I have seen that Random Forest can
+> be used to estimate variable importance in prediction problems. I
+> would like to know, which variables are the most predictive of a
+> cancer diagnosis from the ones in the original dataset?
 
 <!----------------------------->
 
