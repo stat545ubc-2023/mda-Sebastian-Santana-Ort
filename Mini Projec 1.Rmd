@@ -1,6 +1,6 @@
 ---
 title: "Mini Data-Analysis Deliverable 1"
-output: html_document
+output: github_document
 ---
 
 # Welcome to your (maybe) first-ever data analysis project!
@@ -84,10 +84,10 @@ And that is exactly the first thing that you will do!
 
 <!-------------------------- Start your work below ---------------------------->
 
-1: CHOICE_1\_HERE\
-2: CHOICE_2\_HERE\
-3: CHOICE_3\_HERE\
-4: CHOICE_4\_HERE
+1: cancer_sample
+2: building_permits
+3: apt_buildings
+4: vancouver_trees
 
 <!----------------------------------------------------------------------------->
 
@@ -99,8 +99,105 @@ And that is exactly the first thing that you will do!
 
 ```{r}
 ### EXPLORE HERE ###
-steam_games
+#steam_games
 ```
+
+```{r}
+# Create function that uses dplyr to find three dimensions in a dataset
+
+# The function here is used to avoid repetition and shorten the code, it is still using dplyr at its base
+
+dimensions = function(dataframe = steam_games) {
+  return(as.data.frame(dataframe %>% summarise(
+    Number_Rows = n(),
+    Number_Columns = length(names(dataframe)),
+    Is_Data_Frame = is.data.frame(dataframe)
+  )))
+}
+```
+
+
+```{r}
+
+# Creates a data frame with three dimensions extracted using dplyr, it is saving the output into a new dataframe and adding a column
+# that stores the data frame's name, in this case that is 'cancer_sample'
+
+cancer_sample_dimensions = dimensions(cancer_sample)
+
+cancer_sample_dimensions['df_name'] = 'cancer_sample'
+
+```
+
+```{r}
+
+# Creates a data frame with three dimensions extracted using dplyr, it is saving the output into a new dataframe and adding a column
+# that stores the data frame's name, in this case that is 'building_permits'
+
+building_permits_dimensions = dimensions(building_permits)
+
+building_permits_dimensions['df_name'] = 'building_permits'
+
+```
+
+```{r}
+
+# Creates a data frame with three dimensions extracted using dplyr, it is saving the output into a new dataframe and adding a column
+# that stores the data frame's name, in this case that is 'apt_buildings'
+
+apt_buildings_dimensions = dimensions(apt_buildings)
+
+apt_buildings_dimensions['df_name'] = 'apt_buildings'
+
+
+```
+
+
+```{r}
+# Creates a data frame with three dimensions extracted using dplyr, it is saving the output into a new dataframe and adding a column
+# that stores the data frame's name, in this case that is 'vancouver_trees'
+
+vancouver_trees_dimensions = dimensions(vancouver_trees)
+
+vancouver_trees_dimensions['df_name'] = 'vancouver_trees'
+
+
+```
+
+
+```{r}
+
+# Here I am creating an empty data frame to store values from all four dataframes and be able to see them together in the same df
+
+df_dimensions_e = data.frame(
+  Number_Rows = c(),
+  Number_Columns = c(),
+  Is_Data_Frame = c(),
+  df_name = c()
+)
+
+```
+
+
+```{r}
+# This code appends the values for each data frame and 
+
+# The _e, _c, _d, _a notation is used so that if this code is rerun R doesn't continually append rows to a dataframe already built
+
+
+df_dimensions_c = rbind(df_dimensions_e, cancer_sample_dimensions)
+df_dimensions_b = rbind(df_dimensions_c, building_permits_dimensions)
+df_dimensions_a = rbind(df_dimensions_b, apt_buildings_dimensions)
+df_dimensions = rbind(df_dimensions_a, vancouver_trees_dimensions)
+
+df_dimensions %>%
+  select(df_name, everything())
+```
+
+
+```{r}
+colnames(cancer_sample)
+```
+
 
 <!----------------------------------------------------------------------------->
 
@@ -108,11 +205,20 @@ steam_games
 
 <!-------------------------- Start your work below ---------------------------->
 
+```{r}
+# For me the cancer_sample feels like the most relevant to my previous work (being a student in the School of Populationa and Public Health).
+# Additionally, when I looked at the names of the variables in the data frame. I noticed there is a "diagnosis" variable, which could be used
+# as an interesting outcome for the analysis in this assignment.
+```
+
+
 <!----------------------------------------------------------------------------->
 
 1.4 **(2 points)** Time for a  final decision! Going back to the beginning, it's important to have an *end goal* in mind. For example, if I had chosen the `titanic` dataset for my project, I might've wanted to explore the relationship between survival and other variables. Try to think of 1 research question that you would want to answer with your dataset. Note it down below.
 
 <!-------------------------- Start your work below ---------------------------->
+
+> In this case, I would be interested in knowing: are values for area_mean consistent across diagnositc groups? It is possible that the average area values varies between those that have a malignant tumor. 
 
 <!----------------------------------------------------------------------------->
 
@@ -143,6 +249,97 @@ Make sure that you're using dplyr and ggplot2 rather than base R for this task. 
 
 <!-------------------------- Start your work below ---------------------------->
 
+> 2.2.1 Plot the Distribution of a numeric variable
+>
+>Solution: Create a faceted plot in ggplot2 to visualize the distribution of a continuous variable.
+>
+>Justification: In this case, I am interested in seeing if the distribution for the variable "area_mean" is consistent across "diagnosed" categories.
+
+```{r}
+
+# Here I am using geom_density to build a density plot for the variable "area_mean"
+# The green line outlines where the mean value for the area_mean is in the overall distribution.
+
+area_mean_plot = ggplot(cancer_sample, aes(x=area_mean))+
+  geom_density()+
+  geom_vline(aes(xintercept=mean(area_mean)),
+             color="green", linetype="dotdash")
+
+area_mean_plot
+
+```
+
+
+> 2.2.2 Create a new variable 
+>
+> Solution: Take the log of area_mean and store results in a new variable using mutate.
+>
+> Justification: I previously noticed that the distribution for this variable is highly skewed. I want to create a new dummy variable that splits values for the skewed variable into (0) below the mean or (1) Above the mean. Binarizing this variable may be useful in future analysis.
+
+```{r}
+
+# This code creates a new data frame called "cancer_sample_new_var" which contains all variables from the original "cancer_sample" plus
+# The new variable computed using mutate.
+
+# In this case, I am taking the log of all values in the area_mean column and storing those values in a new column called "log_area_mean"
+# Using a logarithmic transformation is helpful when we have a highly skewed distribution, as is the case for area_mean
+cancer_sample_new_var = cancer_sample %>%
+  mutate(log_area_mean = log(area_mean))
+
+```
+
+```{r}
+
+# This code quickly creates a graph for the new varlues for the log_area_mean variable.
+# Notice how the distribution looks more normal now even though there is a slight bump at the right side of the distribution.
+
+ggplot(cancer_sample_new_var, aes(x=log_area_mean))+
+  geom_density()+
+  geom_vline(aes(xintercept=mean(log_area_mean)),
+             color="green", linetype="dotdash")
+```
+
+
+> 2.2.3 Explore the relationship between 2 variables in a plot.
+>
+> Solution: create a scatterplot of log_area_mean(transformed variable created in 2.2.2) and area_worst
+>
+> Justification: from the name, it seems like both variables may be related conceptually. Plotting them together will help me see if they are colinear in any way.
+
+
+```{r}
+
+# In this case, I created a simple scatterplot that had the original area_mean variable at the x-axis and area_worst values in the y-axis.
+
+# In this case it looks like both variables are highly correlated, in future analysis potentially only one of the two could be used.
+
+texture_smooth_scatter = ggplot(cancer_sample_new_var, aes(x=area_mean, y=area_worst))+
+  geom_point()
+
+texture_smooth_scatter
+
+```
+
+> 2.2.4: Use a boxplot to look at the frequency of different observations within a single variable. 
+>
+> Solution: create a boxplot in ggplot for the variance of log_area_mean.
+>
+> Justification: I am interested in visualizing the frequency of observations or whether there are any clear outliers in the log_area_mean column I created in 2.2.2. From the graph in 2.2.3 there seemed to be some heteroschedasticity after the ~1,500 value. I am curious to see if the boxplot will highlight any outliers. Additionally, I want to see if raw values for area_mean are different across diagnosis groups, hence I will use diagnosis in my x-axis.
+
+```{r}
+
+# This code is creating a simple boxplot where the X-axis is diagnosis and y-axis are the raw values for area_mean.
+# The line in the middle of the box indicates the median for theach group, values outside of the box are well above or below the 1st or 3rd quartiles.
+
+area_mean_across_diagnosis = ggplot(cancer_sample_new_var, aes(x=diagnosis, y = area_mean))+
+  geom_boxplot()
+
+area_mean_across_diagnosis
+
+```
+
+
+
 <!----------------------------------------------------------------------------->
 
 # Task 3: Choose research questions 
@@ -150,6 +347,16 @@ Make sure that you're using dplyr and ggplot2 rather than base R for this task. 
 **(4 points)** So far, you have chosen a dataset and gotten familiar with it through exploring the data. You have also brainstormed one research question that interested you (Task 1.4).  Now it's time to pick 4 research questions that you would like to explore in Milestone 2! Write the 4 questions and any additional comments below. 
 
 <!--- *****START HERE***** --->
+
+> In the past, I have worked with health-related data but not with cancer-specific datasets. I am excited to embark on a new project and learn more along the way. I wish, however, that I could have either (1) more information about the variables I have and how they were collected, or (2) to have more information of different types (e.g., when where the tests done, what age was the patient, what was their background, have they had any form of cancer before either themselves or their direct relatives). Still, given the data I have access to now, here are four questions I would like to explore further:
+>
+> 3.1: There seem to be three forms of each "characteristic". For example, there is a radius_mean, radius_se, and radius_worst. I am wondering if each form may have a different relationship to the "diagnosis" of each observation. For example, do higher values for radius_mean and radius_se correspond to higher odds of having a malignant tumor? Or do they have unique relationships with diagnoistic results?S
+>
+> 3.2: I am also interested in understanding the relationship between sets of variables that seem to be related conceptually. It could be that smoothness and texture refer to similar concepts. So, I would like to know: is there any correlation between smoothness_mean and texture_mean across observations?
+>
+> 3.3: I am curious about the difference between _mean and _worst variables (e.g., radius_mean vs radius_worst). I am curious if having a wider range between the _mean and the _worst values is also predictive of wether an observation has a malignant tumor.
+>
+> 3.4: Ultimately, I am curious to see which factors are most predictive of a cancer diagnosis. I have seen that Random Forest can be used to estimate variable importance in prediction problems. I would like to know, which variables are the most predictive of a cancer diagnosis from the ones in the original dataset?
 
 <!----------------------------->
 
