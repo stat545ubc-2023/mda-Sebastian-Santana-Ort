@@ -84,10 +84,10 @@ And that is exactly the first thing that you will do!
 
 <!-------------------------- Start your work below ---------------------------->
 
-1: cancer_sample
-2: building_permits
-3: apt_buildings
-4: vancouver_trees
+>1. cancer_sample
+>2. building_permits
+>3. apt_buildings
+>4. vancouver_trees
 
 <!----------------------------------------------------------------------------->
 
@@ -181,7 +181,7 @@ df_dimensions_e = data.frame(
 ```{r}
 # This code appends the values for each data frame and 
 
-# The _e, _c, _d, _a notation is used so that if this code is rerun R doesn't continually append rows to a data frame already built
+# The _e(e for empty), _c(c for cancer), _b(b for building), _a(a for apt) notation is used #so that if this code is rerun R doesn't continually append rows to a data frame already built
 
 
 df_dimensions_c = rbind(df_dimensions_e, cancer_sample_dimensions)
