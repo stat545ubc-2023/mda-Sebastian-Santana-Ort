@@ -552,7 +552,7 @@ Printing the model on the screen:
 ```{r}
 (se_logistic)
 ```
-Making the first model, diagnosis predicted by standardized radius_se.
+Making the second model, diagnosis predicted by standardized radius_se.
 
 ```{r}
 mean_logistic = glm(diagnosis_F ~ rad_mean_Z, data = first_subset, family = "binomial")

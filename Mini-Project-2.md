@@ -696,7 +696,7 @@ percent_missing
     ##              ID       diagnosis     radius_mean    radius_worst       radius_se 
     ##       0.0000000       0.0000000       0.0000000       0.0000000       0.0000000 
     ##    texture_mean smoothness_mean  perimeter_mean  missing_values 
-    ##       0.0000000       0.0000000       0.0000000       0.3391916
+    ##       0.0000000       0.0000000       0.0000000       0.3602812
 
 **Lastly**
 
@@ -913,7 +913,7 @@ Printing the model on the screen:
     ## Null Deviance:       751.4 
     ## Residual Deviance: 480.6     AIC: 484.6
 
-Making the first model, diagnosis predicted by standardized radius_se.
+Making the second model, diagnosis predicted by standardized radius_se.
 
 ``` r
 mean_logistic = glm(diagnosis_F ~ rad_mean_Z, data = first_subset, family = "binomial")
