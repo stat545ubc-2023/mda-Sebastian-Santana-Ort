@@ -45,6 +45,7 @@ Begin by loading your data and the tidyverse package below:
 ```{r, message = FALSE}
 library(datateachr) # <- might contain the data you picked!
 library(tidyverse)
+library(tidymodels) #<- For me loading this package was required to be able to use functions from the "broom" package
 ```
 
 # Task 1: Process and summarize your data 
@@ -56,10 +57,13 @@ From milestone 1, you should have an idea of the basic structure of your dataset
 First, write out the 4 research questions you defined in milestone 1 were. This will guide your work through milestone 2:
 
 <!-------------------------- Start your work below ---------------------------->
-1. *There seem to be three forms of each "characteristic". For example, there is a radius_mean, radius_se, and radius_worst. I am wondering if each form may have a different relationship to the "diagnosis" of each observation. For example, do higher values for radius_mean and radius_se correspond to higher odds of having a malignant tumor? Or do they have unique relationships with diagnoistic results?*
-2. *I am also interested in understanding the relationship between sets of variables that seem to be related conceptually. It could be that smoothness and texture refer to similar concepts. So, I would like to know: is there any correlation between smoothness_mean and texture_mean across observations?*
-3. *I am curious about the difference between _mean and _worst variables (e.g., radius_mean vs radius_worst). I am curious if having a wider range between the _mean and the _worst values is also predictive of wether an observation has a malignant tumor.*
-4. *Ultimately, I am curious to see which factors are most predictive of a cancer diagnosis. I have seen that Random Forest can be used to estimate variable importance in prediction problems. I would like to know, which variables are the most predictive of a cancer diagnosis from the ones in the original dataset?*
+1. There seem to be three forms of each "characteristic". For example, there is a radius_mean, radius_se, and radius_worst. I am wondering if each form may have a different relationship to the "diagnosis" of each observation. For example, do higher values for radius_mean and radius_se correspond to higher odds of having a malignant tumor? Or do they have unique relationships with diagnoistic results?
+
+2. I am also interested in understanding the relationship between sets of variables that seem to be related conceptually. It could be that smoothness and texture refer to similar concepts. So, I would like to know: is there any correlation between smoothness_mean and texture_mean across observations?
+
+3. I am curious about the difference between _mean and _worst variables (e.g., radius_mean vs radius_worst). I am curious if having a wider range between the _mean and the _worst values is also predictive of wether an observation has a malignant tumor.
+
+4. Ultimately, I am curious to see which factors are most predictive of a cancer diagnosis. I have seen that Random Forest can be used to estimate variable importance in prediction problems. I would like to know, which variables are the most predictive of a cancer diagnosis from the ones in the original dataset?
 <!----------------------------------------------------------------------------->
 
 Here, we will investigate your data using various data manipulation and graphing functions.
@@ -93,11 +97,13 @@ Make sure it's clear what research question you are doing each operation for!
 
 <!------------------------- Start your work below ----------------------------->
 
-**Comment:** My dataset only contains one categorical variable (diagnosis) and the rest are numeric. For the sake of following the instructions in the summarizing options I will have to binarize or build categories from the numeric variables I have available.
+>**Comment:** My dataset only contains one categorical variable (diagnosis) and the rest are numeric. For the sake of following the instructions in the summarizing options I will have to binarize or build categories from the numeric variables I have available.
 
 **Question 1:** Does each "form" of the same variable (e.g., _mean, _se, and _worst) have the same relationship to the "diagnosis" outcome?
 
-_Summarizing:_ Compute _four summary statistics_ (range, mean, Standard Deviation, median, and number of observations) of radius_mean and radius_worst across values for diagnosis. This helps because we can see if patterns across diagnostic groups are consistent for both variables. Additionally, the mean, median, and SD can be used to estimate the skew of these variables.
+_Summarizing (Option 1):_ Compute _four summary statistics_ (range, mean, Standard Deviation, median, and number of observations) of radius_mean and radius_worst across values for diagnosis. 
+
+- How it helps: We can see if patterns across diagnostic groups are consistent for both variables. Additionally, the mean, median, and SD can be used to estimate the skew of these variables.
 
 ```{r}
 
@@ -125,7 +131,9 @@ rad_worst_by_diag
 ```
 
 
-_Graphing:_ Create a _scatterplot with customized alpha transparency_ for radius_mean and radius_worst, while grouping for "diagnosis" outcome. 
+_Graphing (Option 7):_ Create a _scatterplot with customized alpha transparency_ for radius_mean and radius_worst, while grouping for "diagnosis" outcome. 
+
+- How it helps: Graphing the values for both variables will help us see if there is an overall relationship between them. Additionally, coloring based on diagnostic group will help us see if there are different distributions between groups. Overall, there seems to be a positive correlation between radius_mean and radius_worst values, with those with malignant tumors tending to have higher values and more variance for both variables.
 
 ```{r}
 
@@ -138,7 +146,9 @@ first_plot
 
 **Question 2:** Are variables that seem "conceptually" similar also "statistically" similar (.e.g., are values for texture and smoothness correlated to each other)?
 
-_Summarizing:_ First, I will convert the values for texture and smoothness into Z scores so that they are more comparable. Then, I will _compue four summary statistics_ (i.e., range, mean, median, standard deviation) across diagnostic groups.
+_Summarizing (Option 1):_ First, I will convert the values for texture and smoothness into Z scores so that they are more comparable. Then, I will _compue four summary statistics_ (i.e., range, mean, median, standard deviation) across diagnostic groups.
+
+- How it helps: Comparing standardized values will make it easier to see if distributions for both variables are similar.
 
 ```{r}
 mean_text = mean(cancer_sample$texture_mean)
@@ -148,8 +158,8 @@ sd_smth = sd(cancer_sample$smoothness_mean)
 
 cancer_z = cancer_sample%>%
   mutate(
-    texture_mean_Z = (texture_mean - mean_texture) / sd_text,
-    smoothness_mean_Z = (smoothness_mean - mean_smooth) / sd_smth
+    texture_mean_Z = (texture_mean - mean_text) / sd_text,
+    smoothness_mean_Z = (smoothness_mean - mean_smth) / sd_smth
   )
 
 
@@ -160,6 +170,7 @@ texture_table = cancer_z %>%
             SD = sd(texture_mean_Z),
             median = median(texture_mean_Z),
             n = n())
+texture_table
 ```
 ```{r}
 hist(cancer_z$texture_mean_Z)
@@ -183,7 +194,9 @@ hist(cancer_z$smoothness_mean_Z)
 ```
 
 
-_Graphing:_ Create a _scatterplot with customized alpha transparency_ for standardized mean texture and mean smoothness scores, while grouping for "diagnosis" outcome.
+_Graphing (Option 7):_ Create a _scatterplot with customized alpha transparency_ for standardized mean texture and mean smoothness scores, while grouping for "diagnosis" outcome.
+
+- How it helps: A Scatterplot is a useful tool to visualize bivariate distributions. Here it is clear that malignant cases have slightly higher texture mean values but the correltation is not as strong as seen on the first plot.
 
 ```{r}
 second_plot = ggplot(cancer_z, aes(smoothness_mean_Z, texture_mean_Z, col = diagnosis))+
@@ -195,17 +208,100 @@ second_plot
 
 **Question 3:** Are wider ranges between _mean and _worst associated with the odds of "diagnosis" outcomes?
 
-Summarizing: First, I will create a new variable that stores the difference in raw scores between perimeter_mean and perimeter_worst. Second, I will convert the values in that column into Z scores. _Third, I will _create a categorical variable_ with three categories based on Z score for difference between values (Low = Z < -1, Medium = [-1 <= Z] & [Z >= 1], High = Z > 1)  
+_Summarizing (Option 3):_ First, I will create a new variable that stores the difference in raw scores between perimeter_mean and perimeter_worst. Second, I will convert the values in that column into Z scores. _Third, I will _create a categorical variable_ with three categories based on Z score for difference between values (Low = Z < -1, Medium = [-1 >= Z] & [Z <= 1], High = Z > 1)
+
+- How it helps: Categorizing a continuous variable into a factor can be helpful when the original distribution is heavily skewed or disperse. It can also be helpful if we are interested in looking at specific subsets from the overall dataset.
+
+```{r}
+cancer_diff = cancer_z%>%
+  mutate(m_w_diff = (perimeter_mean) - (perimeter_worst))
+
+m_w_diff_Mean = mean(cancer_diff$m_w_diff)
+
+m_w_diff_SD = sd(cancer_diff$m_w_diff)
+
+cancer_diff = cancer_diff %>%
+  mutate(m_w_diff_Z = (m_w_diff -m_w_diff_Mean )/ m_w_diff_SD)%>%
+  mutate(
+    m_w_diff_Factor = factor(case_when(
+      m_w_diff_Z < -1 ~ "Low",
+      m_w_diff_Z >= -1 &  m_w_diff_Z <= 1 ~ "Medium",
+      m_w_diff_Z > 1 ~ "High"),
+      levels = c("Low", "Medium", "High"))
+  )
+
+table(cancer_diff$m_w_diff_Factor)
+  
+```
 
 
+_Graphing (Option 9):_ I will create _3 histograms with different sized bins._ for the difference score between perimeter_mean and perimeter_worst.
 
-Graphing: I will create _3 histograms with different sized bins._ for the difference score between perimeter_mean and perimeter_worst.
+- How it helps: Contrasting bin sizes for this histogram will help me see which value is optimal for visualization. This will also help me see why the group "high" is smaller than the other two.
+
+
+```{r}
+# The bins argument controls the number of bars created in a histogram, 
+  # too few and patterns will be smoothened, 
+  # too many and the graph may look messy
+
+# Bins = 10
+
+bin_1 = ggplot(cancer_diff, aes(x = m_w_diff_Z))+
+  geom_histogram(bins = 10)
+
+bin_1
+```
+```{r}
+
+# Bins = 100
+
+bin_2 = ggplot(cancer_diff, aes(x = m_w_diff_Z))+
+  geom_histogram(bins = 100)
+
+bin_2
+
+```
+```{r}
+# Bins = 1000
+
+bin_3 = ggplot(cancer_diff, aes(x = m_w_diff_Z))+
+  geom_histogram(bins = 1000)
+
+bin_3
+```
+
+From the three graphs above (with bins equal to 10, 100, and 1000) it is clear that the best option is the graph with bins = 100. The first graph had too few lines and it was not able to properly depict the actual proportion of observations in the left side of the distribution. Conversely, the third graph made too many "bars" and improperly emphasizes the left side of the distribution making the big cluster closer to "0" on the x-axis look smaller in comparison. Additionally, the third graph included so many bars that it looks disjointed. The simplest and most effective histogram is the one with bins = 100.
+
 
 **Question 4:** Which variables are most predictive of a cancer diagnosis?
 
-Summarizing: I will use the variable created in question 3 to _compute the proportion and counts in each category of one categorical variable across diagnosis groups._
+_Summarizing (Option 4):_ I will use the variable created in question 3 to _compute the proportion and counts in each category of one categorical variable across diagnosis groups._
 
-Graphing: I will create a graph here with _two geom layers_.
+- How this helps: It will be useful to see if the frequency of the factors we just computed are distinct across "diagnosis" categories. 
+
+```{r}
+
+cancer_diff %>%
+  count(diagnosis, m_w_diff_Factor)%>%
+  group_by(diagnosis)%>%
+  mutate(proportion = prop.table(n))
+
+```
+
+
+_Graphing (Option 8):_ I will create a graph here with _two geom layers_.
+
+- How this helps: In this case it id really useful to visualize the frequency of values for each group. The table contains a lot of values and can be hard to understand fully, a graph can make it easier to see trends or differences in frequencies, specially when the bars are not stacked.
+
+```{r}
+ggplot(cancer_diff, aes(x = m_w_diff_Factor, fill = diagnosis)) + 
+  geom_bar(position = position_dodge(preserve = "single"))+
+  xlab("Difference Between Mean and Worst Perimeter")+
+  ylab("Count")+
+  labs(fill = "Diagnosis (Benign or Malignant)")
+```
+
 
 <!----------------------------------------------------------------------------->
 
@@ -215,6 +311,18 @@ Based on the operations that you've completed, how much closer are you to answer
 
 <!------------------------- Write your answer here ---------------------------->
 
+> In relation to each question, in order:
+
+1. In this case, I am closer to answering my research question. Both the _mean and _worst variables for radius had a similar trend for diagnositc groups (i.e., malignant tumer having larger values for both overall). There is still one part that remains unclear, will radius_se have the same relationship to diagnosis status as the other two variables?
+
+2. In this case, I am closer to answering my research question. Both texture and smoothness appeared to have similar distributions, even if they are not seemingly associated with each other. There is still some missing information that would be important to have. For example, it would be good to know, what is th correlation between texture and smoothness across diagnostic groups. 
+
+3. In this case, I am closer to understanding the relationship between the difference between variables (e.g., mean vs worst perimeter) is associated with the diagnostic characteristic. Still, I have yet to compute odds ratios for this factor or compute a similar variable for other available variables (e.g., radius).
+
+4. In this case, I feel that I am marginally closer to understanding my research question. For me to fully answer my research question I would have to contrast all available variables to be able to truly have a sense of which is the "most" predictive. Additionally, the frequency table I made showed that there are some cell sizes with really low values (e.g., Benign tumors with Low difference between mean and worst perimeter, Malignant tumors with High difference between mean and worst perimeter). Small cell sizes are a problem if we want to do any further statistical modeling using this variable.
+
+
+>Now that I have some additional information, my research questions could be refined further (specially questions 1 and 2). The variable computed for question 3 seemed interested by what was shown in the graph from questionn 4. However, the bar chart in question 4 also helped me see that cell sizes are too small for me to be able to do further statistical testing based on the mean vs worst difference factor. 
 
 <!----------------------------------------------------------------------------->
 
@@ -234,6 +342,38 @@ Based on the definition above, can you identify if your data is tidy or untidy? 
 
 <!--------------------------- Start your work below --------------------------->
 
+>The original cancer_sample dataset had more than 8 variables, so I selected 8 variables for this analysis
+
+```{r}
+cancer_subset = cancer_sample %>%
+  select(ID, diagnosis, radius_mean, radius_worst, 
+         radius_se, texture_mean, smoothness_mean, perimeter_mean)
+```
+
+
+```{r}
+head(cancer_subset, 5)
+```
+>Here I am testing wether the number of unique ID values, which suggests that each row corresponds to one observation only (i.e., that this is a cross-sectional sample)
+
+```{r}
+length_test = length(cancer_subset$ID) == length(unique(cancer_subset$ID))
+
+length_test
+```
+
+>Here I am caculating the proportion of entries in each column that is missing. A value of 0 indicates that there are no missing values.
+
+```{r}
+# proportion in each column that is missing
+
+percent_missing = colSums(is.na(cancer_subset)) / nrow(cancer_subset)
+percent_missing
+```
+
+
+> Based on the tests run above it is clear that (1) each row is an observation, (2) each column is a distinct variable, and (3) each cell contains a unique value. Hence, the cancer_sample I have selected is _tidy._
+
 <!----------------------------------------------------------------------------->
 
 ### 2.2 (4 points)
@@ -246,6 +386,50 @@ Be sure to explain your reasoning for this task. Show us the "before" and "after
 
 <!--------------------------- Start your work below --------------------------->
 
+**Before**
+
+The cancer sample has no missing values.
+
+```{r}
+percent_missing = colSums(is.na(cancer_subset)) / nrow(cancer_subset)
+percent_missing
+```
+
+**Then**
+
+I make the data untidy by adding missing values at random to a new column named "missing_values". 
+
+```{r}
+
+# Creates values for a new column that randomly assigns missing values
+missing = sample(c(NA, 0, 1), nrow(cancer_subset), replace=TRUE)
+
+# Includes new values in a new column called "missing_values"
+cancer_subset$missing_values = missing
+
+```
+
+Proof "cancer_subset" is untidy
+
+```{r}
+percent_missing = colSums(is.na(cancer_subset)) / nrow(cancer_subset)
+percent_missing
+```
+
+
+**Lastly**
+
+I make the subset tidy by removing these missing values. In future analysis I will still use the original cancer_subset dataset since it will not be missing random values. Instead of taking out the column with missing values, I will exclude rows that have a missing value in the "missing_values" column.
+
+```{r}
+
+cancer_subset_clean = cancer_subset %>%
+  drop_na(missing_values)
+
+print(colSums(is.na(cancer_subset_clean)) / nrow(cancer_subset_clean))
+```
+
+
 <!----------------------------------------------------------------------------->
 
 ### 2.3 (4 points)
@@ -254,8 +438,9 @@ Now, you should be more familiar with your data, and also have made progress in 
 
 <!-------------------------- Start your work below ---------------------------->
 
-1.  *FILL_THIS_IN*
-2.  *FILL_THIS_IN*
+1. There seem to be three forms of each “characteristic”. For example, there is a radius_mean, radius_se, and radius_worst. I am wondering if each form may have a different relationship to the “diagnosis” of each observation. For example, do higher values for radius_mean and radius_se correspond to higher odds of having a malignant tumor? Or do they have unique relationships with diagnoistic results?
+
+2. I am also interested in understanding the relationship between sets of variables that seem to be related conceptually. It could be that smoothness and texture refer to similar concepts. So, I would like to know: is there any correlation between smoothness_mean and texture_mean across observations?
 
 <!----------------------------------------------------------------------------->
 
@@ -263,13 +448,71 @@ Explain your decision for choosing the above two research questions.
 
 <!--------------------------- Start your work below --------------------------->
 
+1. Responding to question 1.2 I noticed that that the scatterplot I made showed a relationship between radius_mean and radius_worst. Additionally, it was clear that those with malignant tumors had higher values for both overall. I am curious to explore further these relationships and whether radius_se has the same pattern across diagnostic groups.
+
+2. While responding to question 1.2 I noticed that the association between standardized scores for both variables was not that strong but for both it was clear that those with malignant tumours had higher values. I am curious to see if the trend is consistent for other variables (e.g., perimeter) or other forms of the variable (e.g., _se or _worst)
+
 <!----------------------------------------------------------------------------->
 
 Now, try to choose a version of your data that you think will be appropriate to answer these 2 questions. Use between 4 and 8 functions that we've covered so far (i.e. by filtering, cleaning, tidy'ing, dropping irrelevant columns, etc.).
 
 (If it makes more sense, then you can make/pick two versions of your data, one for each research question.) 
 
-<!--------------------------- Start your work below --------------------------->
+<!--------------------------- Start your work below 
+--------------------------->
+
+Here, I am using the original cancer_subset rather than the cancer_subset_clean because the latter had observations dropped at random.
+
+I am converting raw scores to Z scores to facilitate comparison between variables.
+
+```{r}
+
+first_subset = cancer_sample %>%
+  select(ID, diagnosis, radius_mean, 
+         radius_worst, radius_se) %>%
+  mutate(
+    rad_mean_Z = (radius_mean - mean(radius_mean)) /sd(radius_mean),
+    rad_wrst_Z = (radius_worst - mean(radius_worst)) /sd(radius_worst),
+    rad_se_Z = (radius_se - mean(radius_se)) /sd(radius_se),
+    diagnosis_F = factor(case_when(
+      diagnosis == "B" ~ "Benign",
+      diagnosis == "M" ~ "Malignant"),
+      levels = c("Benign", "Malignant"))
+    ) %>%
+  select(-radius_mean, -radius_worst, -radius_se, -diagnosis)
+
+head(first_subset, 5)
+```
+
+I am converting raw scores to Z scores to facilitate comparison between variables.
+
+```{r}
+
+second_subset = cancer_sample %>%
+  select(ID, diagnosis, 
+         radius_mean, perimeter_mean, 
+         smoothness_mean, texture_mean) %>%
+  mutate(
+    rad_mean_Z = (radius_mean - mean(radius_mean))/
+      sd(radius_mean),
+    per_mean_Z = (perimeter_mean - mean(perimeter_mean))/
+      sd(perimeter_mean),
+    smth_mean_Z = (perimeter_mean - mean(perimeter_mean))/
+      sd(perimeter_mean),
+    txt_mean_Z = (texture_mean - mean(texture_mean))/
+      sd(texture_mean),
+    diagnosis_F = factor(case_when(
+      diagnosis == "B" ~ "Benign",
+      diagnosis == "M" ~ "Malignant"),
+      levels = c("Benign", "Malignant"))
+  )%>%
+  select(-radius_mean, -perimeter_mean, 
+         -smoothness_mean, -texture_mean, -diagnosis)
+
+head(second_subset, 5)
+```
+
+
 
 # Task 3: Modelling
 
@@ -279,9 +522,9 @@ Pick a research question from 1.2, and pick a variable of interest (we'll call i
 
 <!-------------------------- Start your work below ---------------------------->
 
-**Research Question**: FILL_THIS_IN
+**Research Question**: I will choose the first question from 2.3 which is: "For example, do higher values for radius_mean and radius_se correspond to higher odds of having a malignant tumor? Or do they have unique relationships with diagnoistic results?"
 
-**Variable of interest**: FILL_THIS_IN
+**Variable of interest**: My Outcome in this cases will be diagnosis (i.e., Benign or Malignant). I will run two models, both with diagnosis as the outcomes, but either standardized radius_mean or radius_se as predictors.
 
 <!----------------------------------------------------------------------------->
 
@@ -297,6 +540,32 @@ Fit a model or run a hypothesis test that provides insight on this variable with
 
 <!-------------------------- Start your work below ---------------------------->
 
+Making the first model, diagnosis predicted by standardized radius_se.
+
+```{r}
+se_logistic = glm(diagnosis_F ~ rad_se_Z, data = first_subset, family = "binomial")
+
+```
+
+Printing the model on the screen:
+
+```{r}
+(se_logistic)
+```
+Making the first model, diagnosis predicted by standardized radius_se.
+
+```{r}
+mean_logistic = glm(diagnosis_F ~ rad_mean_Z, data = first_subset, family = "binomial")
+
+```
+
+Printing the model on the screen:
+
+```{r}
+(mean_logistic)
+```
+
+
 <!----------------------------------------------------------------------------->
 
 ## 3.2 (3 points)
@@ -308,6 +577,34 @@ Produce something relevant from your fitted model: either predictions on Y, or a
 -   Obtain your results using the `broom` package if possible. If your model is not compatible with the broom function you're needing, then you can obtain your results by some other means, but first indicate which broom function is not compatible.
 
 <!-------------------------- Start your work below ---------------------------->
+
+> I chose to produce the P-value from the first model I ran. Specifically, I extracted the p-value on the coefficient for the effect of rad_se_Z. This p-value will indicate whether the stadardized radius_se variable has a statistically significant association to the diagnosis variable.
+
+> The value itself that I am interested in is stored in the 'p_value_radius_se' object. the result was obtained using the 'tidy' function from the 'broom' package.
+
+Using the 'tidy' function from the 'brrom' package on the model to see the clean output.
+
+```{r}
+model_tibble = tidy(se_logistic)
+model_tibble
+```
+
+P-value of the radius se coefficient. In this case, the p-value is less than 0.05 which indicates that there is a statistically significant association between radius standard error and the odds of having a malignant tumor in our cancer sample dataset.
+
+```{r}
+p_value_radius_se = model_tibble[2, 5]
+p_value_radius_se
+```
+
+
+Because I am running a logistic regression, it is needed to exponentiate the "estimate" from the model to be able to interpret the Odds Ratios.
+
+```{r}
+OR_se_logistic = exp(coef(se_logistic))[2]
+
+OR_se_logistic
+```
+
 
 <!----------------------------------------------------------------------------->
 
