@@ -696,7 +696,7 @@ percent_missing
     ##              ID       diagnosis     radius_mean    radius_worst       radius_se 
     ##       0.0000000       0.0000000       0.0000000       0.0000000       0.0000000 
     ##    texture_mean smoothness_mean  perimeter_mean  missing_values 
-    ##       0.0000000       0.0000000       0.0000000       0.3602812
+    ##       0.0000000       0.0000000       0.0000000       0.3304042
 
 **Lastly**
 

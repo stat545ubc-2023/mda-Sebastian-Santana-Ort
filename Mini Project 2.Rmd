@@ -46,6 +46,7 @@ Begin by loading your data and the tidyverse package below:
 library(datateachr) # <- might contain the data you picked!
 library(tidyverse)
 library(tidymodels) #<- For me loading this package was required to be able to use functions from the "broom" package
+library(here) #<- Required for task 4
 ```
 
 # Task 1: Process and summarize your data 
@@ -580,7 +581,7 @@ Produce something relevant from your fitted model: either predictions on Y, or a
 
 > I chose to produce the P-value from the first model I ran. Specifically, I extracted the p-value on the coefficient for the effect of rad_se_Z. This p-value will indicate whether the stadardized radius_se variable has a statistically significant association to the diagnosis variable.
 
-> The value itself that I am interested in is stored in the 'p_value_radius_se' object. the result was obtained using the 'tidy' function from the 'broom' package.
+> The value itself that I am interested in is stored in the 'p_value_radius_se' object. The result was obtained using the 'tidy' function from the 'broom' package.
 
 Using the 'tidy' function from the 'brrom' package on the model to see the clean output.
 
@@ -621,6 +622,23 @@ Take a summary table that you made from Task 1, and write it as a csv file in yo
 
 <!-------------------------- Start your work below ---------------------------->
 
+I chose the first table from the answer to my first question, which contains the range, mean, standard deviation, median, and number of observations for radius_mean from the original cancer_sample.
+
+```{r}
+
+rad_mean_by_diag
+
+```
+
+Here I am writing to a csv named "rad_mean_by_diag" to be saved in the "output" folder.
+```{r}
+
+write.csv(rad_mean_by_diag,file=here::here("output","rad_mean_by_diag.csv"), row.names=FALSE)
+
+
+```
+
+
 <!----------------------------------------------------------------------------->
 
 ## 4.2 (3 points)
@@ -630,6 +648,23 @@ Write your model object from Task 3 to an R binary file (an RDS), and load it ag
 -   The same robustness and reproducibility criteria as in 4.1 apply here.
 
 <!-------------------------- Start your work below ---------------------------->
+
+I chose to save the "se_logistic" logistic model in this case.
+
+```{r}
+(se_logistic)
+```
+Save the model into an .RDS file named "output","se_logistic_model.RDS"
+```{r}
+saveRDS(se_logistic, file=here::here("output","se_logistic_model.RDS"))
+```
+
+Read the model into a second object named "reloaded_model"
+```{r}
+reloaded_model = readRDS(here::here("output","se_logistic_model.RDS"))
+(reloaded_model)
+```
+
 
 <!----------------------------------------------------------------------------->
 
