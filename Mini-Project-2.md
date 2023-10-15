@@ -121,6 +121,12 @@ library(tidymodels) #<- For me loading this package was required to be able to u
 
     ## Warning: package 'yardstick' was built under R version 4.2.3
 
+``` r
+library(here) #<- Required for task 4
+```
+
+    ## Warning: package 'here' was built under R version 4.2.3
+
 # Task 1: Process and summarize your data
 
 From milestone 1, you should have an idea of the basic structure of your
@@ -696,7 +702,7 @@ percent_missing
     ##              ID       diagnosis     radius_mean    radius_worst       radius_se 
     ##       0.0000000       0.0000000       0.0000000       0.0000000       0.0000000 
     ##    texture_mean smoothness_mean  perimeter_mean  missing_values 
-    ##       0.0000000       0.0000000       0.0000000       0.3304042
+    ##       0.0000000       0.0000000       0.0000000       0.3532513
 
 **Lastly**
 
@@ -962,7 +968,7 @@ Y, or a single value like a regression coefficient or a p-value.
 > diagnosis variable.
 
 > The value itself that I am interested in is stored in the
-> ‘p_value_radius_se’ object. the result was obtained using the ‘tidy’
+> ‘p_value_radius_se’ object. The result was obtained using the ‘tidy’
 > function from the ‘broom’ package.
 
 Using the ‘tidy’ function from the ‘brrom’ package on the model to see
@@ -1027,6 +1033,28 @@ file in your `output` folder. Use the `here::here()` function.
   file, and remake it simply by knitting this Rmd file.
 
 <!-------------------------- Start your work below ---------------------------->
+
+I chose the first table from the answer to my first question, which
+contains the range, mean, standard deviation, median, and number of
+observations for radius_mean from the original cancer_sample.
+
+``` r
+rad_mean_by_diag
+```
+
+    ## # A tibble: 2 × 6
+    ##   diagnosis range  mean    SD median     n
+    ##   <chr>     <dbl> <dbl> <dbl>  <dbl> <int>
+    ## 1 B          10.9  12.1  1.78   12.2   357
+    ## 2 M          17.2  17.5  3.20   17.3   212
+
+Here I am writing to a csv named “rad_mean_by_diag” to be saved in the
+“output” folder.
+
+``` r
+write.csv(rad_mean_by_diag,file=here::here("output","rad_mean_by_diag.csv"), row.names=FALSE)
+```
+
 <!----------------------------------------------------------------------------->
 
 ## 4.2 (3 points)
@@ -1038,6 +1066,48 @@ Use the functions `saveRDS()` and `readRDS()`.
 - The same robustness and reproducibility criteria as in 4.1 apply here.
 
 <!-------------------------- Start your work below ---------------------------->
+
+I chose to save the “se_logistic” logistic model in this case.
+
+``` r
+(se_logistic)
+```
+
+    ## 
+    ## Call:  glm(formula = diagnosis_F ~ rad_se_Z, family = "binomial", data = first_subset)
+    ## 
+    ## Coefficients:
+    ## (Intercept)     rad_se_Z  
+    ##     -0.3693       2.6395  
+    ## 
+    ## Degrees of Freedom: 568 Total (i.e. Null);  567 Residual
+    ## Null Deviance:       751.4 
+    ## Residual Deviance: 480.6     AIC: 484.6
+
+Save the model into an .RDS file named “output”,“se_logistic_model.RDS”
+
+``` r
+saveRDS(se_logistic, file=here::here("output","se_logistic_model.RDS"))
+```
+
+Read the model into a second object named “reloaded_model”
+
+``` r
+reloaded_model = readRDS(here::here("output","se_logistic_model.RDS"))
+(reloaded_model)
+```
+
+    ## 
+    ## Call:  glm(formula = diagnosis_F ~ rad_se_Z, family = "binomial", data = first_subset)
+    ## 
+    ## Coefficients:
+    ## (Intercept)     rad_se_Z  
+    ##     -0.3693       2.6395  
+    ## 
+    ## Degrees of Freedom: 568 Total (i.e. Null);  567 Residual
+    ## Null Deviance:       751.4 
+    ## Residual Deviance: 480.6     AIC: 484.6
+
 <!----------------------------------------------------------------------------->
 
 # Overall Reproducibility/Cleanliness/Coherence Checklist
