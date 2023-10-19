@@ -832,9 +832,9 @@ data, one for each research question.)
 <!--------------------------- Start your work below 
 --------------------------->
 
-Here, I am using the original cancer_subset rather than the
-cancer_subset_clean because the latter had observations dropped at
-random.
+> Here, I am using the original cancer_subset rather than the
+> cancer_subset_clean because the latter had observations dropped at
+> random.
 
 I am converting raw scores to Z scores to facilitate comparison between
 variables.
@@ -1050,18 +1050,6 @@ p_value_radius_se
     ##    p.value
     ##      <dbl>
     ## 1 2.34e-28
-
-Because I am running a logistic regression, it is needed to exponentiate
-the “estimate” from the model to be able to interpret the Odds Ratios.
-
-``` r
-OR_se_logistic = exp(coef(se_logistic))[2]
-
-OR_se_logistic
-```
-
-    ## rad_se_Z 
-    ##   14.006
 
 <!----------------------------------------------------------------------------->
 
