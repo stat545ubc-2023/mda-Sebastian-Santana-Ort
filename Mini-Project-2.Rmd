@@ -283,25 +283,38 @@ _Summarizing (Option 4):_ I will use the variable created in question 3 to _comp
 
 ```{r}
 
-cancer_diff %>%
+summary_table = cancer_diff %>%
   count(diagnosis, m_w_diff_Factor)%>%
   group_by(diagnosis)%>%
   mutate(proportion = prop.table(n))
+
+summary_table
 
 ```
 
 
 _Graphing (Option 8):_ I will create a graph here with _two geom layers_.
 
-- How this helps: In this case it id really useful to visualize the frequency of values for each group. The table contains a lot of values and can be hard to understand fully, a graph can make it easier to see trends or differences in frequencies, specially when the bars are not stacked.
+- How this helps: In this case it is really useful to visualize the frequency of values for each group. The previous table contains a lot of values and can be hard to understand fully, a graph can make it easier to see trends or differences in frequencies, specially when the bars are not stacked. Based on the graph below, two things are clear:
+
+This portion of code creates an object with the median values for 'n' across groups in the diagnosis variable. These values will then be used to create a horizontal line in the bar chart to help us see which categories are at or above the median value for each diagnostic group.
+```{r}
+n__grouped_mean = summary_table %>%
+  group_by(diagnosis) %>%
+  summarize(med_freq = median(n))
+```
+
+The two ggplot layers here are the geom_bar (creates the barbplot) and geom_hline (adds horizontal bars to represent group frequency medians). In this case it is clear that for the benign group most observations were in the "medium" category for the perimeter_mean and perimeter_worst difference variable. For those in the malignant group, the proportion of persons in the "low" category was higher. Suggesting that in the maling group, the difference between mean and worst perimeters tended to be smaller.
 
 ```{r}
-ggplot(cancer_diff, aes(x = m_w_diff_Factor, fill = diagnosis)) + 
-  geom_bar(position = position_dodge(preserve = "single"))+
-  xlab("Difference Between Mean and Worst Perimeter")+
-  ylab("Count")+
-  labs(fill = "Diagnosis (Benign or Malignant)")
+ggplot(summary_table, aes(m_w_diff_Factor, n))+
+  geom_bar(position = 'dodge', stat = 'identity')+
+  facet_wrap(~diagnosis)+
+  geom_hline(data = n__grouped_mean, aes(yintercept = med_freq))
+
 ```
+
+
 
 
 <!----------------------------------------------------------------------------->
@@ -351,11 +364,13 @@ cancer_subset = cancer_sample %>%
          radius_se, texture_mean, smoothness_mean, perimeter_mean)
 ```
 
+> From the abstract below it is clear that each row revers to an observation (with IDs used as unique identifiers) and each column here represents a variable.
 
 ```{r}
 head(cancer_subset, 5)
 ```
->Here I am testing wether the number of unique ID values, which suggests that each row corresponds to one observation only (i.e., that this is a cross-sectional sample)
+
+> Here I am testing wether the number of unique ID values, which suggests that each row corresponds to one observation only (i.e., that each row and column combination correspond to a unique value).
 
 ```{r}
 length_test = length(cancer_subset$ID) == length(unique(cancer_subset$ID))
@@ -389,45 +404,48 @@ Be sure to explain your reasoning for this task. Show us the "before" and "after
 
 **Before**
 
-The cancer sample has no missing values.
+In the original sample: columns represented variables and rows represented observations.
 
 ```{r}
-percent_missing = colSums(is.na(cancer_subset)) / nrow(cancer_subset)
-percent_missing
+head(cancer_subset, 5)
 ```
+
 
 **Then**
 
-I make the data untidy by adding missing values at random to a new column named "missing_values". 
+I have pivoted the data into wide format. Now, the ID values are either in the M or B columns, with each column being named after the "diagnosis" group that ID was in. 
+
 
 ```{r}
+wide_df = cancer_subset %>%
+  pivot_wider(
+    names_from = diagnosis,
+    values_from = ID
+  )
 
-# Creates values for a new column that randomly assigns missing values
-missing = sample(c(NA, 0, 1), nrow(cancer_subset), replace=TRUE)
+wide_df%>%
+  select(c("M", "B"), !c("M", "B"))
 
-# Includes new values in a new column called "missing_values"
-cancer_subset$missing_values = missing
-
-```
-
-Proof "cancer_subset" is untidy
-
-```{r}
-percent_missing = colSums(is.na(cancer_subset)) / nrow(cancer_subset)
-percent_missing
 ```
 
 
 **Lastly**
 
-I make the subset tidy by removing these missing values. In future analysis I will still use the original cancer_subset dataset since it will not be missing random values. Instead of taking out the column with missing values, I will exclude rows that have a missing value in the "missing_values" column.
+I make the subset tidy by converting the ID column into long format, so that each column represents a variable and each row represents an observation.
+
+In this case I use "na.omit()" in the end because converting from wide back to long format created a series of missing values that had to be omitted.
 
 ```{r}
 
-cancer_subset_clean = cancer_subset %>%
-  drop_na(missing_values)
+tidy_again = wide_df %>%
+  pivot_longer(
+    cols = c("B", "M"),
+    names_to = "diagnosis",
+    values_to = "ID") %>%
+  select(c(ID, diagnosis), !c(ID, diagnosis))%>%
+  na.omit()
 
-print(colSums(is.na(cancer_subset_clean)) / nrow(cancer_subset_clean))
+head(tidy_again)
 ```
 
 
@@ -462,7 +480,7 @@ Now, try to choose a version of your data that you think will be appropriate to 
 <!--------------------------- Start your work below 
 --------------------------->
 
-Here, I am using the original cancer_subset rather than the cancer_subset_clean because the latter had observations dropped at random.
+> Here, I am using the original cancer_subset rather than the cancer_subset_clean because the latter had observations dropped at random.
 
 I am converting raw scores to Z scores to facilitate comparison between variables.
 
@@ -595,15 +613,6 @@ P-value of the radius se coefficient. In this case, the p-value is less than 0.0
 ```{r}
 p_value_radius_se = model_tibble[2, 5]
 p_value_radius_se
-```
-
-
-Because I am running a logistic regression, it is needed to exponentiate the "estimate" from the model to be able to interpret the Odds Ratios.
-
-```{r}
-OR_se_logistic = exp(coef(se_logistic))[2]
-
-OR_se_logistic
 ```
 
 
