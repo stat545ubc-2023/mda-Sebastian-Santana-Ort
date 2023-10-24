@@ -589,7 +589,7 @@ research questions are yielding interesting results?
 
 > Now that I have some additional information, my research questions
 > could be refined further (specially questions 1 and 2). The variable
-> computed for question 3 seemed interested by what was shown in the
+> computed for question 3 seemed interesting by what was shown in the
 > graph from questionn 4. However, the bar chart in question 4 also
 > helped me see that cell sizes are too small for me to be able to do
 > further statistical testing based on the mean vs worst difference
@@ -742,6 +742,11 @@ wide_df%>%
     ## # ℹ 559 more rows
     ## # ℹ 1 more variable: perimeter_mean <dbl>
 
+At this point, each row is an observation and each cell is a value.
+However, each column is not a variable perse, since the B and M column
+contain information that was part of the “diagnosis” variable
+originally.
+
 **Lastly**
 
 I make the subset tidy by converting the ID column into long format, so
@@ -774,6 +779,10 @@ head(tidy_again)
     ## 5 84358402 M                20.3         22.5     0.757         14.3
     ## 6   843786 M                12.4         15.5     0.334         15.7
     ## # ℹ 2 more variables: smoothness_mean <dbl>, perimeter_mean <dbl>
+
+Here, it is clear that the data has been reverted to its original state
+and it is tidy again (e.g., each row being an observation, each column a
+variable, each cell a value).
 
 <!----------------------------------------------------------------------------->
 
@@ -816,8 +825,7 @@ Explain your decision for choosing the above two research questions.
     between standardized scores for both variables was not that strong
     but for both it was clear that those with malignant tumours had
     higher values. I am curious to see if the trend is consistent for
-    other variables (e.g., perimeter) or other forms of the variable
-    (e.g., \_se or \_worst)
+    other variables (e.g., perimeter).
 
 <!----------------------------------------------------------------------------->
 
@@ -834,7 +842,8 @@ data, one for each research question.)
 
 > Here, I am using the original cancer_subset rather than the
 > cancer_subset_clean because the latter had observations dropped at
-> random.
+> random. The four functions I am using are: select, mutate, filter, and
+> factor.
 
 I am converting raw scores to Z scores to facilitate comparison between
 variables.
@@ -843,6 +852,7 @@ variables.
 first_subset = cancer_sample %>%
   select(ID, diagnosis, radius_mean, 
          radius_worst, radius_se) %>%
+  filter(!is.na(diagnosis)) %>%
   mutate(
     rad_mean_Z = (radius_mean - mean(radius_mean)) /sd(radius_mean),
     rad_wrst_Z = (radius_worst - mean(radius_worst)) /sd(radius_worst),
@@ -874,6 +884,7 @@ second_subset = cancer_sample %>%
   select(ID, diagnosis, 
          radius_mean, perimeter_mean, 
          smoothness_mean, texture_mean) %>%
+  filter(!is.na(diagnosis)) %>%
   mutate(
     rad_mean_Z = (radius_mean - mean(radius_mean))/
       sd(radius_mean),
@@ -1036,7 +1047,7 @@ model_tibble
     ## 1 (Intercept)   -0.369     0.118     -3.13 1.77e- 3
     ## 2 rad_se_Z       2.64      0.239     11.0  2.34e-28
 
-P-value of the radius se coefficient. In this case, the p-value is less
+P-value of the radius_se coefficient. In this case, the p-value is less
 than 0.05 which indicates that there is a statistically significant
 association between radius standard error and the odds of having a
 malignant tumor in our cancer sample dataset.

@@ -336,7 +336,7 @@ Based on the operations that you've completed, how much closer are you to answer
 4. In this case, I feel that I am marginally closer to understanding my research question. For me to fully answer my research question I would have to contrast all available variables to be able to truly have a sense of which is the "most" predictive. Additionally, the frequency table I made showed that there are some cell sizes with really low values (e.g., Benign tumors with Low difference between mean and worst perimeter, Malignant tumors with High difference between mean and worst perimeter). Small cell sizes are a problem if we want to do any further statistical modeling using this variable.
 
 
->Now that I have some additional information, my research questions could be refined further (specially questions 1 and 2). The variable computed for question 3 seemed interested by what was shown in the graph from questionn 4. However, the bar chart in question 4 also helped me see that cell sizes are too small for me to be able to do further statistical testing based on the mean vs worst difference factor. 
+>Now that I have some additional information, my research questions could be refined further (specially questions 1 and 2). The variable computed for question 3 seemed interesting by what was shown in the graph from questionn 4. However, the bar chart in question 4 also helped me see that cell sizes are too small for me to be able to do further statistical testing based on the mean vs worst difference factor. 
 
 <!----------------------------------------------------------------------------->
 
@@ -428,6 +428,7 @@ wide_df%>%
 
 ```
 
+At this point, each row is an observation and each cell is a value. However, each column is not a variable perse, since the B and M column contain information that was part of the "diagnosis" variable originally. 
 
 **Lastly**
 
@@ -448,6 +449,7 @@ tidy_again = wide_df %>%
 head(tidy_again)
 ```
 
+Here, it is clear that the data has been reverted to its original state and it is tidy again (e.g., each row being an observation, each column a variable, each cell a value).
 
 <!----------------------------------------------------------------------------->
 
@@ -469,7 +471,7 @@ Explain your decision for choosing the above two research questions.
 
 1. Responding to question 1.2 I noticed that that the scatterplot I made showed a relationship between radius_mean and radius_worst. Additionally, it was clear that those with malignant tumors had higher values for both overall. I am curious to explore further these relationships and whether radius_se has the same pattern across diagnostic groups.
 
-2. While responding to question 1.2 I noticed that the association between standardized scores for both variables was not that strong but for both it was clear that those with malignant tumours had higher values. I am curious to see if the trend is consistent for other variables (e.g., perimeter) or other forms of the variable (e.g., _se or _worst)
+2. While responding to question 1.2 I noticed that the association between standardized scores for both variables was not that strong but for both it was clear that those with malignant tumours had higher values. I am curious to see if the trend is consistent for other variables (e.g., perimeter).
 
 <!----------------------------------------------------------------------------->
 
@@ -480,7 +482,7 @@ Now, try to choose a version of your data that you think will be appropriate to 
 <!--------------------------- Start your work below 
 --------------------------->
 
-> Here, I am using the original cancer_subset rather than the cancer_subset_clean because the latter had observations dropped at random.
+> Here, I am using the original cancer_subset rather than the cancer_subset_clean because the latter had observations dropped at random. The four functions I am using are: select, mutate, filter, and factor.
 
 I am converting raw scores to Z scores to facilitate comparison between variables.
 
@@ -489,6 +491,7 @@ I am converting raw scores to Z scores to facilitate comparison between variable
 first_subset = cancer_sample %>%
   select(ID, diagnosis, radius_mean, 
          radius_worst, radius_se) %>%
+  filter(!is.na(diagnosis)) %>%
   mutate(
     rad_mean_Z = (radius_mean - mean(radius_mean)) /sd(radius_mean),
     rad_wrst_Z = (radius_worst - mean(radius_worst)) /sd(radius_worst),
@@ -511,6 +514,7 @@ second_subset = cancer_sample %>%
   select(ID, diagnosis, 
          radius_mean, perimeter_mean, 
          smoothness_mean, texture_mean) %>%
+  filter(!is.na(diagnosis)) %>%
   mutate(
     rad_mean_Z = (radius_mean - mean(radius_mean))/
       sd(radius_mean),
@@ -608,7 +612,7 @@ model_tibble = tidy(se_logistic)
 model_tibble
 ```
 
-P-value of the radius se coefficient. In this case, the p-value is less than 0.05 which indicates that there is a statistically significant association between radius standard error and the odds of having a malignant tumor in our cancer sample dataset.
+P-value of the radius_se coefficient. In this case, the p-value is less than 0.05 which indicates that there is a statistically significant association between radius standard error and the odds of having a malignant tumor in our cancer sample dataset.
 
 ```{r}
 p_value_radius_se = model_tibble[2, 5]
